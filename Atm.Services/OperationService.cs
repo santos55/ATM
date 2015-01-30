@@ -11,11 +11,14 @@ using Atm.Model.Entities;
 using Atm.Infrastructure;
 using Atm.Infrastructure.Repositories;
 using Atm.DataHelpers;
+using Atm.Services.Responses;
 
 namespace Atm.Services
 {
     public interface IOperationService
     {
+        BalanceResponse Balance(string cardNumber);
+        
         bool Withdrawal(string number, double amount);
     }
     public class OperationService : IOperationService
@@ -32,8 +35,24 @@ namespace Atm.Services
             this.accountRepository = accountRepository;
 
             this.unitOfWork = unitOfWork;
-        }  
-        
+        }
+
+        public BalanceResponse Balance(string cardNumber)
+        {
+            var card = cardRepository.GetByNumber(cardNumber);
+
+            if (card == null)
+                return null;
+
+            var balance = new BalanceResponse
+            {
+                Date = DateTime.Now,
+                Amount = card.Account.Balance,
+                CardNumber = cardNumber
+            };
+
+            return balance;
+        }
 
         public bool Withdrawal(string number, double amount)
         {

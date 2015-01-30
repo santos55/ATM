@@ -41,21 +41,25 @@ namespace Atm.Web.Controllers
                 return View("Index", model); 
             }
 
-            return RedirectToAction("Pin", new { CardNumber = cardNumber });
+            TempData["CardNumber"] = cardNumber;
+            return RedirectToAction("Pin");
         }
 
-
-
-        public ActionResult Pin(string cardNumber)
+        public ActionResult Pin()
         {
-            if (cardNumber==null)
-            {
-                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
-            }
-
-            var pinModel = new PinModel { CardNumber = cardNumber };
-            return View(pinModel);            
+            return View();
         }
+
+        //public ActionResult Pin(string cardNumber)
+        //{
+        //    if (cardNumber==null)
+        //    {
+        //        return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+        //    }
+
+        //    var pinModel = new PinModel { CardNumber = cardNumber };
+        //    return View(pinModel);            
+        //}
 
         [HttpPost]
         public ActionResult ValidatePin(PinModel model)
@@ -65,7 +69,7 @@ namespace Atm.Web.Controllers
                 return View("Pin", model);
             }
 
-            var response = loginService.Login(model.CardNumber, model.Pin);
+            var response = loginService.Login(TempData["CardNumber"].ToString(), model.Pin);
                 
             if (!response.Success)
             {
@@ -74,8 +78,8 @@ namespace Atm.Web.Controllers
             }
 
 
-            FormsAuthentication.SetAuthCookie(model.CardNumber, false);
-            return RedirectToAction("Index", "Home");          
+            //FormsAuthentication.SetAuthCookie(model.CardNumber, false);
+            return RedirectToAction("Index", "Operation");          
             
         }
 

@@ -6,18 +6,16 @@ using System.Web;
 
 namespace Atm.Web.Models
 {
-    public class CardModel
+    public class BalanceModel
     {
-        [Required]
         [Display(Name = "Card Number")]
         public string CardNumber { get; set; }
 
+        [Display(Name = "Date")]
+        public DateTime Date { get; set; }
+
+        [Display(Name = "Amount")]
+        public double Amount { get; set; }
     }
 
-    public class PinModel
-    {
-        [Required]
-        [Display(Name = "PIN")]
-        public string Pin { get; set; }
-    }
 }
