@@ -16,8 +16,8 @@ namespace Atm.Web.Models
 
     public class PinModel
     {
-        [Required]
         [Display(Name = "Card Number")]
+        [Required]
         public string CardNumber { get; set; }
 
         [Required]

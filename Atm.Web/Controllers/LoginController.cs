@@ -3,6 +3,7 @@ using Atm.Web.Models;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Net;
 using System.Web;
 using System.Web.Mvc;
 using System.Web.Security;
@@ -28,26 +29,32 @@ namespace Atm.Web.Controllers
         {
             if (!ModelState.IsValid)
             {
-                return View("Index");
+                return View("Index", model);
             }
 
-            var response = loginService.IsValidCard(model.CardNumber);
+            var cardNumber = model.CardNumber.Any(p => p == '-') ? model.CardNumber.Replace("-", string.Empty) : model.CardNumber;
+            var response = loginService.IsValidCard(cardNumber);
             
             if (!response.Success)
             {
                 ModelState.AddModelError("INVALID_CARD",response.ErrorMessage);
                 return View("Index", model); 
             }
-            
-            //TODO: Save card context                    
-            return RedirectToAction("Pin", "Login", new PinModel { CardNumber = model.CardNumber });
+
+            return RedirectToAction("Pin", new { CardNumber = cardNumber });
         }
 
 
-        [ValidateInput(false)]
-        public ActionResult Pin(PinModel model)
+
+        public ActionResult Pin(string cardNumber)
         {
-            return View(model);
+            if (cardNumber==null)
+            {
+                return new HttpStatusCodeResult(HttpStatusCode.BadRequest);
+            }
+
+            var pinModel = new PinModel { CardNumber = cardNumber };
+            return View(pinModel);            
         }
 
         [HttpPost]
@@ -66,13 +73,16 @@ namespace Atm.Web.Controllers
                 return View("Pin", model);
             }
 
-            ////TODO: Save card context                    
-            //return RedirectToAction("Pin", "Login", new PinModel { CardNumber = model.CardNumber });
+
             FormsAuthentication.SetAuthCookie(model.CardNumber, false);
-            return RedirectToAction("Index", "Operations");          
+            return RedirectToAction("Index", "Home");          
             
         }
 
-
+        public ActionResult Exit()
+        {
+            FormsAuthentication.SignOut();
+            return RedirectToAction("Index", "Login");
+        }
     }
 }

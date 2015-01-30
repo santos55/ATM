@@ -6,6 +6,7 @@ using System.Web.Mvc;
 
 namespace Atm.Web.Controllers
 {
+    [Authorize]
     public class HomeController : Controller
     {
         public ActionResult Index()
@@ -13,16 +14,16 @@ namespace Atm.Web.Controllers
             return View();
         }
 
-        public ActionResult About()
+        public ActionResult Balance()
         {
-            ViewBag.Message = "Your application description page.";
+            ViewBag.Message = "Balance";
 
             return View();
         }
 
-        public ActionResult Contact()
+        public ActionResult Withdrawal()
         {
-            ViewBag.Message = "Your contact page.";
+            ViewBag.Message = "Your Withdrawal page.";
 
             return View();
         }

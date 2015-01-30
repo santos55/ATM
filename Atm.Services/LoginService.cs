@@ -44,23 +44,26 @@ namespace Atm.Services
 
         public ServiceResponse<User> Login(string cardNumber, string pin)
         {
-            var card = cardRepository.GetByNumber(cardNumber);
-            
+            var card = cardRepository.GetByNumber(cardNumber);            
             if (card == null)
             {
                 return new ServiceResponse<User> { Success = false, ErrorMessage = "Card not found" };
-            }
+            }                       
 
+            //Wrong Pin
             if (card.Pin != pin)
-            {
+            {                
                 card.WrongAttempts++;
+                var response = new ServiceResponse<User> { Success = false, ErrorMessage = "Invalid PIN" };
+                
                 if (card.WrongAttempts == 4)
                 {
-                    card.Blocked = true;
-                    Save();
-                    return new ServiceResponse<User> { Success = false, ErrorMessage = "Invalid PIN. Card is blocked" };
+                    card.Blocked = true;                    
+                    response.ErrorMessage = "Invalid PIN. Card is blocked";
                 }
-                return new ServiceResponse<User> { Success = false, ErrorMessage = "Invalid PIN" };
+                Save();
+                
+                return response;
             }
             
             //Valid pin
@@ -68,7 +71,7 @@ namespace Atm.Services
             cardRepository.Update(card);
             Save();
 
-            return new ServiceResponse<User> { Success = true, Data=card.Account.User, ErrorMessage = "Invalid PIN" };
+            return new ServiceResponse<User> { Success = true, Data=card.Account.User };
         }
         public void Save()
         {
