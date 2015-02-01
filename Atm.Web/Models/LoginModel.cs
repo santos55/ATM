@@ -18,6 +18,7 @@ namespace Atm.Web.Models
     {
         [Required]
         [Display(Name = "PIN")]
+        [DataType(DataType.Password)]
         public string Pin { get; set; }
     }
 }

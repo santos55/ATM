@@ -1,17 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Atm.Model.Entities;
-using Atm.Infrastructure;
+﻿using Atm.DataHelpers;
 using Atm.Infrastructure.Repositories;
-using Atm.DataHelpers;
+using Atm.Model.Entities;
 using Atm.Services.Responses;
+using System;
 
 namespace Atm.Services
 {
@@ -19,7 +10,7 @@ namespace Atm.Services
     {
         BalanceResponse Balance(string cardNumber);
         
-        bool Withdrawal(string number, double amount);
+        ServiceResponse<BalanceResponse> Withdrawal(string number, double amount);
     }
     public class OperationService : IOperationService
     {        
@@ -44,6 +35,9 @@ namespace Atm.Services
             if (card == null)
                 return null;
 
+            TrackOperation(card, OperationTypes.BalanceCheck);
+            Save();
+
             var balance = new BalanceResponse
             {
                 Date = DateTime.Now,
@@ -54,20 +48,52 @@ namespace Atm.Services
             return balance;
         }
 
-        public bool Withdrawal(string number, double amount)
+        private void TrackOperation(Card card, OperationTypes type, double amount = 0)
         {
-            var card = cardRepository.GetByNumber(number);
-            if (card==null)
-                return false;
 
+            var operation = new Operation
+            {
+                OpeartionType = OperationTypes.BalanceCheck,
+                CardId = card.CardId,
+                Date = DateTime.UtcNow,
+                Amount = 0
+            };
+
+            operationRepository.Add(operation);            
+        }
+
+        public ServiceResponse<BalanceResponse> Withdrawal(string cardNumber, double amount)
+        {
+            var response = new ServiceResponse<BalanceResponse>
+            {
+                Data = new BalanceResponse { CardNumber = cardNumber },
+                Success = false,
+                ErrorMessage = string.Empty
+            };
+
+            var card = cardRepository.GetByNumber(cardNumber);
+            if (card==null)
+            {
+                response.ErrorMessage = "Card not found";
+                return response;
+            }
+            
             if (card.Account.Balance < amount)
             {
-                return false;
+                response.ErrorMessage = "Operation denied. The amount exceeds the account balance.";
+               return response;
             }
 
-            //DO operation
+            //perform opertaion and track it.
+            TrackOperation(card, OperationTypes.Withdrawal, amount);
+            card.Account.Balance = amount--;
+            Save();
 
-            return true;
+            //return balance
+            response.Data.Date = DateTime.Now;
+            response.Data.Amount = card.Account.Balance;
+
+            return response;
         }
         public void Save()
         {

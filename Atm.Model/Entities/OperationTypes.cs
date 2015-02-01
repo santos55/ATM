@@ -9,6 +9,7 @@ namespace Atm.Model.Entities
     public enum OperationTypes
     {
         Withdrawal,
-        Credit
+        Credit,
+        BalanceCheck
     }
 }
