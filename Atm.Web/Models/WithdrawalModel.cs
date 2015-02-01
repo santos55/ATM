@@ -9,10 +9,8 @@ namespace Atm.Web.Models
     public class WithdrawalModel
     {     
         [Required]
-        [Display(Name = "Amount")]
-        [DisplayFormat(ApplyFormatInEditMode = true, DataFormatString = "{0:c}")]
-        [DataType(DataType.Currency)]
-        [Range(0, 10000)]
+        [Display(Name = "Amount")]     
+        [Range(1, 10000)]
         public double Amount { get; set; }
 
     }
@@ -25,7 +23,7 @@ namespace Atm.Web.Models
         [Display(Name = "Date")]
         public DateTime Date { get; set; }
 
-        [Display(Name = "WithdrawalAmount")]
+        [Display(Name = "Withdrawal Amount")]
         public double Amount { get; set; }
 
         [Display(Name = "Balance")]

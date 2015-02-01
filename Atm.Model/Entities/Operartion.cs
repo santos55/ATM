@@ -11,7 +11,6 @@ namespace Atm.Model.Entities
     {
         [Required]
         public int OperationId { get; set; }
-
         [Required]
         public int CardId { get; set; }
         public virtual Card Card { get; set; }

@@ -48,19 +48,6 @@ namespace Atm.Services
             return balance;
         }
 
-        private void TrackOperation(Card card, OperationTypes type, double amount = 0)
-        {
-
-            var operation = new Operation
-            {
-                OpeartionType = OperationTypes.BalanceCheck,
-                CardId = card.CardId,
-                Date = DateTime.UtcNow,
-                Amount = 0
-            };
-
-            operationRepository.Add(operation);            
-        }
 
         public ServiceResponse<BalanceResponse> Withdrawal(string cardNumber, double amount)
         {
@@ -84,17 +71,34 @@ namespace Atm.Services
                return response;
             }
 
-            //perform opertaion and track it.
+            //perform opertaion and track it.            
+            card.Account.Balance = card.Account.Balance - amount;
             TrackOperation(card, OperationTypes.Withdrawal, amount);
-            card.Account.Balance = amount--;
             Save();
 
             //return balance
+            response.Success = true;
             response.Data.Date = DateTime.Now;
             response.Data.Amount = card.Account.Balance;
 
             return response;
         }
+
+
+        private void TrackOperation(Card card, OperationTypes type, double amount = 0)
+        {
+            var operation = new Operation
+            {
+                OpeartionType = type,
+                CardId = card.CardId,
+                Date = DateTime.UtcNow,
+                Amount = amount
+            };
+
+            operationRepository.Add(operation);
+        }
+
+
         public void Save()
         {
             unitOfWork.Commit();

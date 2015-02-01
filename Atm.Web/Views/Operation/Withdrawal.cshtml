@@ -4,21 +4,49 @@
 <script src="@Url.Content("~/Scripts/jquery.validate.unobtrusive.min.js")" type="text/javascript"></script>
 
 
+<div class="jumbotron">
+    <h1>ATM</h1>
+</div>
+
+<h2>Withdrawal</h2>
+
 @Html.ValidationSummary()
 
 @using (Html.BeginForm("WithdrawalReport", "Operation"))
 {
     <div>
-        <fieldset>
-            <legend>Withdrawal</legend>
-
+        <fieldset>            
             <div class="editor-label">
                 @Html.LabelFor(m => m.Amount)
+            </div>
+            <div class="editor-label">
+                @Html.EditorFor(m => m.Amount, new { maxlength = 4 })
+            </div>
+            <div>
+                <a href="#" id="clear">Clear</a>
             </div>
             <p>
                 <input type="submit" value="OK" />
             </p>
         </fieldset>
+
+        <div>
+            @Html.ActionLink("Back", "Index", "Operation")
+        </div>
+
     </div>
 }
 
+@section Scripts {
+
+    <script>
+        $(document).ready(function () {
+            $('#clear').click(function () {
+                $('#Amount').val("");
+            });
+
+            $("input[type=text]").first().focus();
+        });
+
+    </script>
+}
