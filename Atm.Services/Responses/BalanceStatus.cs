@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace Atm.Services.Responses
 {
-    public class BalanceResponse
+    public class BalanceStatus
     {
         public string CardNumber { get; set; }
         public DateTime Date { get; set; }

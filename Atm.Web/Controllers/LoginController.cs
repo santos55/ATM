@@ -17,8 +17,7 @@ namespace Atm.Web.Controllers
         {
             this.loginService = loginService;
         }  
-        //
-        // GET: /Sample/
+
         public ActionResult Index()
         {
             return View();
@@ -67,15 +66,12 @@ namespace Atm.Web.Controllers
                 return View("Pin", model);
             }
 
-
-            //FormsAuthentication.SetAuthCookie(model.CardNumber, false);
             return RedirectToAction("Index", "Operation");          
             
         }
 
         public ActionResult Exit()
         {
-            //FormsAuthentication.SignOut();
             Session.Abandon();
             return RedirectToAction("Index", "Login");
         }

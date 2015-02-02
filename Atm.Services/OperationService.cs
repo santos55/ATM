@@ -8,9 +8,9 @@ namespace Atm.Services
 {
     public interface IOperationService
     {
-        BalanceResponse Balance(string cardNumber);
+        BalanceStatus Balance(string cardNumber);
         
-        ServiceResponse<BalanceResponse> Withdrawal(string number, double amount);
+        ServiceResponse<BalanceStatus> Withdrawal(string number, double amount);
     }
     public class OperationService : IOperationService
     {        
@@ -28,7 +28,7 @@ namespace Atm.Services
             this.unitOfWork = unitOfWork;
         }
 
-        public BalanceResponse Balance(string cardNumber)
+        public BalanceStatus Balance(string cardNumber)
         {
             var card = cardRepository.GetByNumber(cardNumber);
 
@@ -38,7 +38,7 @@ namespace Atm.Services
             TrackOperation(card, OperationTypes.BalanceCheck);
             Save();
 
-            var balance = new BalanceResponse
+            var balance = new BalanceStatus
             {
                 Date = DateTime.Now,
                 Amount = card.Account.Balance,
@@ -49,11 +49,11 @@ namespace Atm.Services
         }
 
 
-        public ServiceResponse<BalanceResponse> Withdrawal(string cardNumber, double amount)
+        public ServiceResponse<BalanceStatus> Withdrawal(string cardNumber, double amount)
         {
-            var response = new ServiceResponse<BalanceResponse>
+            var response = new ServiceResponse<BalanceStatus>
             {
-                Data = new BalanceResponse { CardNumber = cardNumber },
+                Data = new BalanceStatus { CardNumber = cardNumber },
                 Success = false,
                 ErrorMessage = string.Empty
             };
